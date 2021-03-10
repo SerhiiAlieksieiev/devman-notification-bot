@@ -12,17 +12,20 @@ def request_cheked_work(last_response_time):
     response.raise_for_status()
     return response.json()
 
-def  send_negative_message(last_response):
+
+def send_negative_message(last_response):
+    title = last_response['new_attempts'][0]['lesson_title']
+    url = last_response['new_attempts'][0]['lesson_url']
     bot.send_message(chat_id=chat_id,
-                     text='У вас проверили работу "{}" \n К сожалению, в работе нашлись ошибки.\n https://dvmn.org{}'.format(
-                         last_response['new_attempts'][0]['lesson_title'],
-                         last_response['new_attempts'][0]['lesson_url']))
+                     text=f'У вас проверили работу "{title}" \n К сожалению, в работе нашлись ошибки.\n https://dvmn.org{url}')
+
 
 def send_positive_message(last_response):
+    title = last_response['new_attempts'][0]['lesson_title']
+    url = last_response['new_attempts'][0]['lesson_url']
     bot.send_message(chat_id=chat_id,
-                     text='У вас проверили работу "{}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{}'.format(
-                         last_response['new_attempts'][0]['lesson_title'],
-                         last_response['new_attempts'][0]['lesson_url']))
+                     text=f'У вас проверили работу "{title}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{url}')
+
 
 if __name__ == '__main__':
     chat_id = TELEGRAM_CHAT_ID
@@ -39,7 +42,7 @@ if __name__ == '__main__':
                 response = request_cheked_work(last_response["timestamp_to_request"])
                 last_response = response
             else:
-                if last_response['new_attempts'][0]['is_negative'] == True:
+                if last_response['new_attempts'][0]['is_negative'] is True:
                     send_negative_message(last_response)
                 else:
                     send_positive_message(last_response)
