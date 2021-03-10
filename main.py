@@ -12,13 +12,13 @@ def request_cheked_work(last_response_time):
     response.raise_for_status()
     return response.json()
 
-def send_positive_message(last_response):
+def  send_negative_message(last_response):
     bot.send_message(chat_id=chat_id,
                      text='У вас проверили работу "{}" \n К сожалению, в работе нашлись ошибки.\n https://dvmn.org{}'.format(
                          last_response['new_attempts'][0]['lesson_title'],
                          last_response['new_attempts'][0]['lesson_url']))
 
-def send_negative_message(last_response):
+def send_positive_message(last_response):
     bot.send_message(chat_id=chat_id,
                      text='У вас проверили работу "{}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{}'.format(
                          last_response['new_attempts'][0]['lesson_title'],
@@ -40,9 +40,9 @@ if __name__ == '__main__':
                 last_response = response
             else:
                 if last_response['new_attempts'][0]['is_negative'] == True:
-                    send_positive_message(last_response)
-                else:
                     send_negative_message(last_response)
+                else:
+                    send_positive_message(last_response)
                 response = request_cheked_work(last_response["last_attempt_timestamp"])
                 last_response = response
     except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
