@@ -1,9 +1,8 @@
-from datetime import datetime
-
+import os
+import dotenv
+import time
 import requests
 import telegram
-
-from settings import DEVMAN_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
 
 
 def request_cheked_work(last_response_time):
@@ -13,40 +12,37 @@ def request_cheked_work(last_response_time):
     return response.json()
 
 
-def send_negative_message(last_response):
+def send_message(last_response):
     title = last_response['new_attempts'][0]['lesson_title']
     url = last_response['new_attempts'][0]['lesson_url']
-    bot.send_message(chat_id=chat_id,
-                     text=f'У вас проверили работу "{title}" \n К сожалению, в работе нашлись ошибки.\n https://dvmn.org{url}')
-
-
-def send_positive_message(last_response):
-    title = last_response['new_attempts'][0]['lesson_title']
-    url = last_response['new_attempts'][0]['lesson_url']
-    bot.send_message(chat_id=chat_id,
-                     text=f'У вас проверили работу "{title}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{url}')
+    if last_response['new_attempts'][0]['is_negative'] is True:
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID,
+                         text=f'У вас проверили работу "{title}" \n К сожалению, в работе нашлись ошибки.\n https://dvmn.org{url}')
+    else:
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID,
+                         text=f'У вас проверили работу "{title}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{url}')
 
 
 if __name__ == '__main__':
-    chat_id = TELEGRAM_CHAT_ID
-    telegram_token = TELEGRAM_TOKEN
-    devman_token = DEVMAN_TOKEN
-    bot = telegram.Bot(token=telegram_token)
+    dotenv.load_dotenv('.env')
+
+    DEVMAN_TOKEN = os.environ['DEVMAN_TOKEN']
+    TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
+    TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
+    bot = telegram.Bot(token=TELEGRAM_TOKEN)
     url = 'https://dvmn.org/api/long_polling/'
-    headers = {"Authorization": "Token {}".format(devman_token)}
+    headers = {"Authorization": "Token {}".format(DEVMAN_TOKEN)}
 
     try:
-        last_response = request_cheked_work(datetime.now().timestamp())
+        timestamp = None
         while True:
-            if last_response["status"] == "timeout":
-                response = request_cheked_work(last_response["timestamp_to_request"])
-                last_response = response
+            response = request_cheked_work(timestamp)
+            if response["status"] == "timeout":
+                timestamp = response["timestamp_to_request"]
             else:
-                if last_response['new_attempts'][0]['is_negative'] is True:
-                    send_negative_message(last_response)
-                else:
-                    send_positive_message(last_response)
-                response = request_cheked_work(last_response["last_attempt_timestamp"])
-                last_response = response
+                timestamp = response["last_attempt_timestamp"]
+                send_message(response)
+
     except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
+        time.sleep(60)
         pass
