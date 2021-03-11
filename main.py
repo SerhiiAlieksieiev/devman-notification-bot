@@ -1,48 +1,50 @@
 import os
-import dotenv
 import time
+
+import dotenv
 import requests
 import telegram
 
 
 def request_cheked_work(last_response_time):
-    timestamp = "timestamp={}".format(last_response_time)
+    timestamp = {
+        "timestamp": last_response_time
+    }
     response = requests.get(url, params=timestamp, headers=headers)
     response.raise_for_status()
     return response.json()
 
 
 def send_message(last_response):
-    title = last_response['new_attempts'][0]['lesson_title']
-    url = last_response['new_attempts'][0]['lesson_url']
-    if last_response['new_attempts'][0]['is_negative'] is True:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID,
+    response_result = last_response['new_attempts'][0]
+    title = response_result['lesson_title']
+    url = response_result['lesson_url']
+    if response_result['is_negative']:
+        bot.send_message(chat_id=telegram_chat_id,
                          text=f'У вас проверили работу "{title}" \n К сожалению, в работе нашлись ошибки.\n https://dvmn.org{url}')
     else:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID,
+        bot.send_message(chat_id=telegram_chat_id,
                          text=f'У вас проверили работу "{title}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{url}')
 
 
 if __name__ == '__main__':
     dotenv.load_dotenv('.env')
-
-    DEVMAN_TOKEN = os.environ['DEVMAN_TOKEN']
-    TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
-    TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
-    bot = telegram.Bot(token=TELEGRAM_TOKEN)
+    devman_token = os.environ['DEVMAN_TOKEN']
+    telegram_token = os.environ['TELEGRAM_TOKEN']
+    telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
+    bot = telegram.Bot(token=telegram_token)
     url = 'https://dvmn.org/api/long_polling/'
-    headers = {"Authorization": "Token {}".format(DEVMAN_TOKEN)}
-
-    try:
-        timestamp = None
-        while True:
+    headers = {"Authorization": "Token {}".format(devman_token)}
+    timestamp = None
+    while True:
+        try:
             response = request_cheked_work(timestamp)
             if response["status"] == "timeout":
                 timestamp = response["timestamp_to_request"]
             else:
                 timestamp = response["last_attempt_timestamp"]
                 send_message(response)
-
-    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
-        time.sleep(60)
-        pass
+        except requests.exceptions.ReadTimeout:
+            pass
+        except requests.exceptions.ConnectionError:
+            time.sleep(60)
