@@ -1,7 +1,7 @@
 import os
 import time
 
-import dotenv
+#import dotenv для локального запуска бота
 import requests
 import telegram
 
