@@ -44,13 +44,14 @@ if __name__ == '__main__':
 
     tg_logger = logging.getLogger("tg_logger")
     tg_logger.setLevel(logging.INFO)
-    tg_logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
-    tg_logger.info("Бот запущен")
-    tg_logger.warning("Предвещаются проблемы")
-    tg_logger.error("Есть ошибка")
-    tg_logger.critical("Горим")
+
 
     while True:
+        tg_logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
+        tg_logger.info("Бот запущен")
+        tg_logger.warning("Предвещаются проблемы")
+        tg_logger.error("Есть ошибка")
+        tg_logger.critical("Горим")
         try:
             10 / 0
             try:
