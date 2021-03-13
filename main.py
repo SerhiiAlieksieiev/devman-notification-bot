@@ -45,7 +45,7 @@ if __name__ == '__main__':
         def emit(self, record):
             log_entry = self.format(record)
             bot.send_message(
-                self.telegram_chat_id,
+                self.chat_id,
                 self.format(record)
             )
 
