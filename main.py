@@ -1,6 +1,6 @@
 import os
 import time
-
+import logging
 #import dotenv для локального запуска бота
 import requests
 import telegram
@@ -36,6 +36,8 @@ if __name__ == '__main__':
     url = 'https://dvmn.org/api/long_polling/'
     headers = {"Authorization": "Token {}".format(devman_token)}
     timestamp = None
+    logging.basicConfig(level=logging.DEBUG)
+    logging.info('Произошло какое-то событие. Всё идёт по плану.')
     while True:
         try:
             response = request_cheked_work(timestamp)
