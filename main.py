@@ -1,10 +1,12 @@
 import logging
 import os
 import time
-from handler import TelegramBotHandler
+
 # import dotenv для локального запуска бота
 import requests
 import telegram
+
+from handler import TelegramBotHandler
 
 
 def request_cheked_work(last_response_time):
@@ -37,23 +39,32 @@ if __name__ == '__main__':
     url = 'https://dvmn.org/api/long_polling/'
     headers = {"Authorization": "Token {}".format(devman_token)}
     timestamp = None
-    logging.basicConfig(level=logging.DEBUG)
-    logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
+    # logging.basicConfig(level=logging.DEBUG)
+    # logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
 
-    logger = logging.getLogger("logger")
-    logger.setLevel(logging.INFO)
-    logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
-    logger.info("Бот запущен")
+    tg_logger = logging.getLogger("tg_logger")
+    tg_logger.setLevel(logging.INFO)
+    tg_logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
+    tg_logger.info("Бот запущен")
+    tg_logger.warning("Предвещаются проблемы")
+    tg_logger.error("Есть ошибка")
+    tg_logger.critical("Горим")
 
     while True:
         try:
-            response = request_cheked_work(timestamp)
-            if response["status"] == "timeout":
-                timestamp = response["timestamp_to_request"]
-            else:
-                timestamp = response["last_attempt_timestamp"]
-                send_message(response)
-        except requests.exceptions.ReadTimeout:
-            pass
-        except requests.exceptions.ConnectionError:
-            time.sleep(60)
+            10 / 0
+            try:
+                response = request_cheked_work(timestamp)
+                if response["status"] == "timeout":
+                    timestamp = response["timestamp_to_request"]
+                else:
+                    timestamp = response["last_attempt_timestamp"]
+                    send_message(response)
+            except requests.exceptions.ReadTimeout:
+                pass
+            except requests.exceptions.ConnectionError:
+                time.sleep(60)
+        except ZeroDivisionError as e:
+            tg_logger.error(e)
+
+
