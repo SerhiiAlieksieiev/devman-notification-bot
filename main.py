@@ -40,7 +40,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
 
-
     class TelegramBotHandler(logging.Handler):
         def emit(self, record: logging.LogRecord, chat_id: telegram_chat_id):
             log_entry = self.format(record)
