@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-
+import TelegramBotHandler
 # import dotenv для локального запуска бота
 import requests
 import telegram
@@ -40,18 +40,9 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
 
-
-    class TelegramBotHandler(logging.Handler):
-        def emit(self, record):
-            bot.send_message(
-                chat_id=telegram_chat_id,
-                text=self.format(record)
-            )
-
-
     logger = logging.getLogger("logger")
     logger.setLevel(logging.INFO)
-    logger.addHandler(TelegramBotHandler())
+    logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
     logger.info("Бот запущен")
 
     while True:
