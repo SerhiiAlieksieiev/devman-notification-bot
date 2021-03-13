@@ -27,6 +27,7 @@ def send_message(last_response):
                          text=f'У вас проверили работу "{title}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{url}')
 
 
+
 if __name__ == '__main__':
     #dotenv.load_dotenv('.env')  для локального запуска бота
     devman_token = os.environ['DEVMAN_TOKEN']
@@ -37,7 +38,22 @@ if __name__ == '__main__':
     headers = {"Authorization": "Token {}".format(devman_token)}
     timestamp = None
     logging.basicConfig(level=logging.DEBUG)
-    logging.info('Произошло какое-то событие. Всё идёт по плану.')
+    logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
+
+
+    class TelegramBotHandler(logging.Handler):
+        def emit(self, record):
+            log_entry = self.format(record)
+            bot.send_message(
+                self.telegram_chat_id,
+                self.format(record)
+            )
+
+    logger = logging.getLogger("logger")
+    logger.setLevel(logging.INFO)
+    logger.addHandler(TelegramBotHandler())
+    logger.info("Бот запущен")
+
     while True:
         try:
             response = request_cheked_work(timestamp)
