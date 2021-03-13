@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-import TelegramBotHandler
+from handler import TelegramBotHandler
 # import dotenv для локального запуска бота
 import requests
 import telegram
