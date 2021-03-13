@@ -1,12 +1,9 @@
 import logging
 import os
 import time
-
 # import dotenv для локального запуска бота
 import requests
 import telegram
-
-from handler import TelegramBotHandler
 
 
 def request_cheked_work(last_response_time):
@@ -44,16 +41,11 @@ if __name__ == '__main__':
 
     tg_logger = logging.getLogger("tg_logger")
     tg_logger.setLevel(logging.INFO)
+    tg_logger.info("Бот запущен")
 
-
-    while True:
-        tg_logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
-        tg_logger.info("Бот запущен")
-        tg_logger.warning("Предвещаются проблемы")
-        tg_logger.error("Есть ошибка")
-        tg_logger.critical("Горим")
-        try:
-            10 / 0
+    try:
+        10 / 0
+        while True:
             try:
                 response = request_cheked_work(timestamp)
                 if response["status"] == "timeout":
@@ -65,7 +57,5 @@ if __name__ == '__main__':
                 pass
             except requests.exceptions.ConnectionError:
                 time.sleep(60)
-        except ZeroDivisionError as e:
-            tg_logger.error(e)
-
-
+    except ZeroDivisionError as e:
+        tg_logger.error(e)
