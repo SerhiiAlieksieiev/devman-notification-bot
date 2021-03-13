@@ -1,7 +1,8 @@
+import logging
 import os
 import time
-import logging
-#import dotenv для локального запуска бота
+
+# import dotenv для локального запуска бота
 import requests
 import telegram
 
@@ -27,9 +28,8 @@ def send_message(last_response):
                          text=f'У вас проверили работу "{title}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{url}')
 
 
-
 if __name__ == '__main__':
-    #dotenv.load_dotenv('.env')  для локального запуска бота
+    # dotenv.load_dotenv('.env')  для локального запуска бота
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
@@ -40,13 +40,14 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
 
+
     class TelegramBotHandler(logging.Handler):
-        def emit(self, record: logging.LogRecord, chat_id: telegram_chat_id):
-            log_entry = self.format(record)
+        def emit(self, record):
             bot.send_message(
-                chat_id=self.chat_id,
+                chat_id=telegram_chat_id,
                 text=self.format(record)
             )
+
 
     logger = logging.getLogger("logger")
     logger.setLevel(logging.INFO)
