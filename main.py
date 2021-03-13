@@ -42,11 +42,11 @@ if __name__ == '__main__':
 
 
     class TelegramBotHandler(logging.Handler):
-        def emit(self, record: logging.LogRecord, chat_id:telegram_chat_id):
+        def emit(self, record: logging.LogRecord, chat_id: telegram_chat_id):
             log_entry = self.format(record)
             bot.send_message(
-                self.chat_id,
-                self.format(record)
+                chat_id=self.chat_id,
+                text=self.format(record)
             )
 
     logger = logging.getLogger("logger")
