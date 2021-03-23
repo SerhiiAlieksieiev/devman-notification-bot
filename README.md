@@ -33,7 +33,7 @@
 
 2. Зарегистрируйстесь на Heroku и создайте приложение
 
-3. Опубликойте свой код на GitHub
+3. Опубликуйте свой код на GitHub
 
 4. Привяжите GitHub к аккаунту Heroku и нажмите Deploy Branch внизу страницы
 
@@ -41,7 +41,7 @@
 	
 	`bot: python3 main.py`
 
-6. Добавьте переменные окружение во вкладке Settings на сайте Heroku.
+6. Добавьте переменные окружение во вкладке Settings на сайте Heroku
 
 ### Цели проекта
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org/referrals/eC72w2BASG9Zj3T7iMTSsxDbHXthCmJmeLKBNfwf/).
