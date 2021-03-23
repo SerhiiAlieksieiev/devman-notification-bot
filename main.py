@@ -2,7 +2,6 @@ import logging
 import os
 import time
 
-import dotenv
 import requests
 import telegram
 
@@ -33,7 +32,6 @@ def send_message(last_response, bot, telegram_chat_id):
 
 
 def main():
-    dotenv.load_dotenv('.env')
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
