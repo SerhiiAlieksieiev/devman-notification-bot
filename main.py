@@ -1,9 +1,16 @@
 import logging
 import os
 import time
+<<<<<<< HEAD
 import requests
 import telegram
 import dotenv # для локального запуска бота
+=======
+from handler import TelegramBotHandler
+# import dotenv для локального запуска бота
+import requests
+import telegram
+>>>>>>> parent of 30c3361 (Update main.py)
 
 
 def request_cheked_work(last_response_time):
@@ -36,9 +43,10 @@ if __name__ == '__main__':
     url = 'https://dvmn.org/api/long_polling/'
     headers = {"Authorization": "Token {}".format(devman_token)}
     timestamp = None
-    # logging.basicConfig(level=logging.DEBUG)
-    # logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
 
+<<<<<<< HEAD
     tg_logger = logging.getLogger("tg_logger")
     tg_logger.setLevel(logging.INFO)
     tg_logger.info("Бот запущен")
@@ -59,3 +67,22 @@ if __name__ == '__main__':
                 time.sleep(60)
     except ZeroDivisionError as e:
         tg_logger.error(e)
+=======
+    logger = logging.getLogger("logger")
+    logger.setLevel(logging.INFO)
+    logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
+    logger.info("Бот запущен")
+
+    while True:
+        try:
+            response = request_cheked_work(timestamp)
+            if response["status"] == "timeout":
+                timestamp = response["timestamp_to_request"]
+            else:
+                timestamp = response["last_attempt_timestamp"]
+                send_message(response)
+        except requests.exceptions.ReadTimeout:
+            pass
+        except requests.exceptions.ConnectionError:
+            time.sleep(60)
+>>>>>>> parent of 30c3361 (Update main.py)
