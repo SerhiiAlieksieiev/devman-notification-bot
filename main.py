@@ -1,9 +1,9 @@
 import logging
 import os
 import time
-# import dotenv для локального запуска бота
 import requests
 import telegram
+import dotenv # для локального запуска бота
 
 
 def request_cheked_work(last_response_time):
@@ -28,7 +28,7 @@ def send_message(last_response):
 
 
 if __name__ == '__main__':
-    # dotenv.load_dotenv('.env')  для локального запуска бота
+    dotenv.load_dotenv('.env') # для локального запуска бота
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
