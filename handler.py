@@ -1,6 +1,7 @@
-
 from logging import Handler, LogRecord
+
 import telegram
+
 
 class TelegramBotHandler(Handler):
     def __init__(self, token: str, chat_id: str):
@@ -11,6 +12,6 @@ class TelegramBotHandler(Handler):
     def emit(self, record: LogRecord):
         bot = telegram.Bot(self.token)
         bot.send_message(
-            chat_id = self.chat_id,
-            text = self.format(record)
+            chat_id=self.chat_id,
+            text=self.format(record)
         )

@@ -2,14 +2,16 @@ import logging
 import os
 import time
 
-import dotenv  # для локального запуска бота
+import dotenv
 import requests
 import telegram
 
 from handler import TelegramBotHandler
 
 
-def request_cheked_work(last_response_time):
+def request_cheked_work(last_response_time, devman_token):
+    url = 'https://dvmn.org/api/long_polling/'
+    headers = {"Authorization": "Token {}".format(devman_token)}
     timestamp = {
         "timestamp": last_response_time
     }
@@ -18,7 +20,7 @@ def request_cheked_work(last_response_time):
     return response.json()
 
 
-def send_message(last_response):
+def send_message(last_response, bot, telegram_chat_id):
     response_result = last_response['new_attempts'][0]
     title = response_result['lesson_title']
     url = response_result['lesson_url']
@@ -30,14 +32,13 @@ def send_message(last_response):
                          text=f'У вас проверили работу "{title}" \n Преподавателю всё понравилось, можно приступать к следующему уроку!\n https://dvmn.org{url}')
 
 
-if __name__ == '__main__':
-    dotenv.load_dotenv('.env')  # для локального запуска бота
+def main():
+    dotenv.load_dotenv('.env')
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
     bot = telegram.Bot(token=telegram_token)
-    url = 'https://dvmn.org/api/long_polling/'
-    headers = {"Authorization": "Token {}".format(devman_token)}
+
     timestamp = None
     logging.basicConfig(level=logging.DEBUG)
     logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
@@ -47,21 +48,23 @@ if __name__ == '__main__':
     logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
     logger.info("Бот запущен")
 
-    try:
-        1 / 0
-    except ZeroDivisionError as err:
-        logger.error("Бот упал с ошибкой:")
-        logger.error(err, exc_info=True)
-
     while True:
         try:
-            response = request_cheked_work(timestamp)
+            response = request_cheked_work(timestamp, devman_token)
             if response["status"] == "timeout":
                 timestamp = response["timestamp_to_request"]
             else:
                 timestamp = response["last_attempt_timestamp"]
-                send_message(response)
-        except requests.exceptions.ReadTimeout:
+                send_message(response, bot, telegram_chat_id)
+        except requests.exceptions.ReadTimeout as read_timeout:
+            logger.error("Бот упал с ошибкой:")
+            logger.error(read_timeout, exc_info=True)
             pass
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError as connection_error:
+            logger.error("Бот упал с ошибкой:")
+            logger.error(connection_error, exc_info=True)
             time.sleep(60)
+
+
+if __name__ == '__main__':
+    main()
