@@ -37,7 +37,7 @@
 
 4. Привяжите GitHub к аккаунту Heroku и нажмите Deploy Branch внизу страницы
 
-5. Создайте [Procfile](https://devcenter.heroku.com/articles/procfile) с одной строчкой
+5. Проверьте наличие файла [Procfile](https://devcenter.heroku.com/articles/procfile) с одной строчкой
 	
 	`bot: python3 main.py`
 
