@@ -1,16 +1,12 @@
 import logging
 import os
 import time
-<<<<<<< HEAD
+
+import dotenv  # для локального запуска бота
 import requests
 import telegram
-import dotenv # для локального запуска бота
-=======
+
 from handler import TelegramBotHandler
-# import dotenv для локального запуска бота
-import requests
-import telegram
->>>>>>> parent of 30c3361 (Update main.py)
 
 
 def request_cheked_work(last_response_time):
@@ -35,7 +31,7 @@ def send_message(last_response):
 
 
 if __name__ == '__main__':
-    dotenv.load_dotenv('.env') # для локального запуска бота
+    dotenv.load_dotenv('.env')  # для локального запуска бота
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
@@ -46,32 +42,16 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.basicConfig(format="%(process)d %(levelname)s %(message)s")
 
-<<<<<<< HEAD
-    tg_logger = logging.getLogger("tg_logger")
-    tg_logger.setLevel(logging.INFO)
-    tg_logger.info("Бот запущен")
-
-    try:
-        10 / 0
-        while True:
-            try:
-                response = request_cheked_work(timestamp)
-                if response["status"] == "timeout":
-                    timestamp = response["timestamp_to_request"]
-                else:
-                    timestamp = response["last_attempt_timestamp"]
-                    send_message(response)
-            except requests.exceptions.ReadTimeout:
-                pass
-            except requests.exceptions.ConnectionError:
-                time.sleep(60)
-    except ZeroDivisionError as e:
-        tg_logger.error(e)
-=======
     logger = logging.getLogger("logger")
     logger.setLevel(logging.INFO)
     logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
     logger.info("Бот запущен")
+
+    try:
+        1 / 0
+    except ZeroDivisionError as err:
+        logger.error("Бот упал с ошибкой:")
+        logger.error(err, exc_info=True)
 
     while True:
         try:
@@ -85,4 +65,3 @@ if __name__ == '__main__':
             pass
         except requests.exceptions.ConnectionError:
             time.sleep(60)
->>>>>>> parent of 30c3361 (Update main.py)
