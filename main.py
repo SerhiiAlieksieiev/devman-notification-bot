@@ -5,14 +5,14 @@ import time
 import requests
 import telegram
 
-#import dotenv
-
 from handler import TelegramBotHandler
 
 logger = logging.getLogger("logger")
 
+
 def alarm():
     logger.info("Бот запущен")
+
 
 def request_cheked_work(last_response_time, devman_token):
     url = 'https://dvmn.org/api/long_polling/'
@@ -38,8 +38,6 @@ def send_message(last_response, bot, telegram_chat_id):
 
 
 def main():
-    #dotenv.load_dotenv('.env')
-
     devman_token = os.environ['DEVMAN_TOKEN']
     telegram_token = os.environ['TELEGRAM_TOKEN']
     telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
@@ -52,7 +50,6 @@ def main():
 
     alarm()
 
-
     while True:
         try:
             response = request_cheked_work(timestamp, devman_token)
@@ -62,12 +59,10 @@ def main():
                 timestamp = response["last_attempt_timestamp"]
                 send_message(response, bot, telegram_chat_id)
         except requests.exceptions.ReadTimeout as read_timeout:
-            logger.error("Бот упал с ошибкой:")
-            logger.error(read_timeout, exc_info=True)
+            logger.exception("Бот упал с ошибкой:")
             pass
         except requests.exceptions.ConnectionError as connection_error:
-            logger.error("Бот упал с ошибкой:")
-            logger.error(connection_error, exc_info=True)
+            logger.exception("Бот упал с ошибкой:")
             time.sleep(60)
 
 
