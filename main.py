@@ -10,10 +10,6 @@ from handler import TelegramBotHandler
 logger = logging.getLogger("logger")
 
 
-def alarm():
-    logger.info("Бот запущен")
-
-
 def request_cheked_work(last_response_time, devman_token):
     url = 'https://dvmn.org/api/long_polling/'
     headers = {"Authorization": "Token {}".format(devman_token)}
@@ -47,8 +43,7 @@ def main():
 
     logger.setLevel(logging.INFO)
     logger.addHandler(TelegramBotHandler(telegram_token, telegram_chat_id))
-
-    alarm()
+    logger.info("Бот запущен")
 
     while True:
         try:
